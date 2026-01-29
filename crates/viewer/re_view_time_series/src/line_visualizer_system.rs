@@ -35,30 +35,19 @@ impl IdentifiedViewSystem for SeriesLinesSystem {
 impl VisualizerSystem for SeriesLinesSystem {
     fn visualizer_query_info(
         &self,
-        app_options: &re_viewer_context::AppOptions,
+        _app_options: &re_viewer_context::AppOptions,
     ) -> VisualizerQueryInfo {
-        if app_options.experimental.component_mapping {
-            VisualizerQueryInfo {
-                relevant_archetype: archetypes::SeriesLines::name().into(),
-                required: re_viewer_context::RequiredComponents::AnyPhysicalDatatype {
-                    semantic_type: components::Scalar::name(),
-                    physical_types: util::series_supported_datatypes().into_iter().collect(),
-                },
-                queried: archetypes::Scalars::all_components()
-                    .iter()
-                    .chain(archetypes::SeriesLines::all_components().iter())
-                    .cloned()
-                    .collect(),
-            }
-        } else {
-            let mut query_info = VisualizerQueryInfo::from_archetype::<archetypes::Scalars>();
-            query_info
-                .queried
-                .extend(archetypes::SeriesLines::all_components().iter().cloned());
-
-            query_info.relevant_archetype = archetypes::SeriesLines::name().into();
-
-            query_info
+        VisualizerQueryInfo {
+            relevant_archetype: archetypes::SeriesLines::name().into(),
+            required: re_viewer_context::RequiredComponents::AnyPhysicalDatatype {
+                semantic_type: components::Scalar::name(),
+                physical_types: util::series_supported_datatypes().into_iter().collect(),
+            },
+            queried: archetypes::Scalars::all_components()
+                .iter()
+                .chain(archetypes::SeriesLines::all_components().iter())
+                .cloned()
+                .collect(),
         }
     }
 
