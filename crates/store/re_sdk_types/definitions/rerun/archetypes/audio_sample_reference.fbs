@@ -1,0 +1,28 @@
+namespace rerun.archetypes;
+
+/// Reference to a position within an `AssetAudio`.
+///
+/// Used to place audio on the timeline and enable synchronized playback
+/// with other data streams (video, sensors, detections).
+///
+/// Log these at timestamps where you want the audio to be "active" on the timeline.
+/// The viewer will decode and play from the specified sample offset.
+///
+/// \example archetypes/audio_sample_reference title="Reference audio frames on timeline"
+table AudioSampleReference (
+  "attr.docs.category": "Audio",
+  "attr.docs.view_types": "AudioView",
+  "attr.rerun.state": "unstable"
+) {
+  /// Sample offset into the audio stream.
+  ///
+  /// The viewer will seek to this position when the timeline reaches
+  /// this timestamp. For continuous playback, log references at regular
+  /// intervals (e.g., every second).
+  sample_offset: rerun.components.SampleOffset ("attr.rerun.component_required", order: 1000);
+
+  /// Optional: Number of samples to play from this offset.
+  ///
+  /// If not specified, plays until the next reference or end of asset.
+  duration_samples: rerun.components.SampleCount ("attr.rerun.component_optional", nullable, order: 2000);
+}

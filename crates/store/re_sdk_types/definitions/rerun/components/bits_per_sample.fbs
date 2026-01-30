@@ -1,0 +1,18 @@
+namespace rerun.components;
+
+// ---
+
+/// Bit depth of audio samples.
+///
+/// Matches Symphonia's `CodecParameters.bits_per_sample`.
+///
+/// Common values: 8, 16 (CD quality), 24 (professional), 32.
+table BitsPerSample (
+  "attr.arrow.transparent",
+  "attr.python.aliases": "int",
+  "attr.python.array_aliases": "int | npt.NDArray[np.uint32]",
+  "attr.rust.derive": "Copy, PartialEq, Eq, PartialOrd, Ord",
+  "attr.rust.repr": "transparent"
+) {
+  bits: rerun.datatypes.UInt32 (order: 100);
+}

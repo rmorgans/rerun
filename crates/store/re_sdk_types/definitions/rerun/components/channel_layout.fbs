@@ -1,0 +1,26 @@
+namespace rerun.components;
+
+// ---
+
+/// Audio channel layout as a bitmask.
+///
+/// Matches Symphonia's `Channels` type. Bits follow the WAVEFORMATEXTENSIBLE
+/// standard (channels 0-17) plus Symphonia extensions (18+).
+///
+/// Common layouts:
+/// * `0x1` = Mono (Front Center)
+/// * `0x3` = Stereo (Front Left + Front Right)
+/// * `0x3F` = 5.1 Surround
+/// * `0xFF` = 7.1 Surround
+///
+/// Use `count_ones()` to get the number of channels from the bitmask.
+table ChannelLayout (
+  "attr.arrow.transparent",
+  "attr.python.aliases": "int",
+  "attr.python.array_aliases": "int | npt.NDArray[np.uint32]",
+  "attr.rust.derive": "Copy, PartialEq, Eq",
+  "attr.rust.repr": "transparent"
+) {
+  /// Bitmask of active channels.
+  bits: rerun.datatypes.UInt32 (order: 100);
+}

@@ -68,6 +68,29 @@ impl MediaType {
     ///
     /// <https://www.iana.org/assignments/media-types/video/mp4>
     pub const MP4: &'static str = "video/mp4";
+
+    // -------------------------------------------------------
+    // Audio:
+
+    /// [FLAC audio](https://en.wikipedia.org/wiki/FLAC): `audio/flac`.
+    ///
+    /// Lossless audio codec, recommended for archival and analysis.
+    pub const FLAC: &'static str = "audio/flac";
+
+    /// [WAV audio](https://en.wikipedia.org/wiki/WAV): `audio/wav`.
+    ///
+    /// Uncompressed PCM audio in a RIFF container.
+    pub const WAV: &'static str = "audio/wav";
+
+    /// [MP3 audio](https://en.wikipedia.org/wiki/MP3): `audio/mpeg`.
+    ///
+    /// Lossy audio codec, widely compatible.
+    pub const MP3: &'static str = "audio/mpeg";
+
+    /// [OGG container](https://en.wikipedia.org/wiki/Ogg): `audio/ogg`.
+    ///
+    /// Container format for Opus or Vorbis codecs.
+    pub const OGG: &'static str = "audio/ogg";
 }
 
 impl MediaType {
@@ -147,6 +170,33 @@ impl MediaType {
     #[inline]
     pub fn mp4() -> Self {
         Self(Self::MP4.into())
+    }
+
+    // -------------------------------------------------------
+    // Audio:
+
+    /// `audio/flac`
+    #[inline]
+    pub fn flac() -> Self {
+        Self(Self::FLAC.into())
+    }
+
+    /// `audio/wav`
+    #[inline]
+    pub fn wav() -> Self {
+        Self(Self::WAV.into())
+    }
+
+    /// `audio/mpeg` (MP3)
+    #[inline]
+    pub fn mp3() -> Self {
+        Self(Self::MP3.into())
+    }
+
+    /// `audio/ogg`
+    #[inline]
+    pub fn ogg() -> Self {
+        Self(Self::OGG.into())
     }
 }
 
@@ -238,11 +288,42 @@ impl MediaType {
         //   Rerun for now…)
         // - obj is simply text, so no magic byte
 
+        // Audio matchers
+        fn flac_matcher(buf: &[u8]) -> bool {
+            buf.len() >= 4 && buf[0] == b'f' && buf[1] == b'L' && buf[2] == b'a' && buf[3] == b'C'
+        }
+
+        fn wav_matcher(buf: &[u8]) -> bool {
+            buf.len() >= 12
+                && buf[0] == b'R'
+                && buf[1] == b'I'
+                && buf[2] == b'F'
+                && buf[3] == b'F'
+                && buf[8] == b'W'
+                && buf[9] == b'A'
+                && buf[10] == b'V'
+                && buf[11] == b'E'
+        }
+
+        fn mp3_matcher(buf: &[u8]) -> bool {
+            // ID3 tag or MP3 frame sync
+            (buf.len() >= 3 && buf[0] == b'I' && buf[1] == b'D' && buf[2] == b'3')
+                || (buf.len() >= 2 && buf[0] == 0xFF && (buf[1] & 0xE0) == 0xE0)
+        }
+
+        fn ogg_matcher(buf: &[u8]) -> bool {
+            buf.len() >= 4 && buf[0] == b'O' && buf[1] == b'g' && buf[2] == b'g' && buf[3] == b'S'
+        }
+
         let mut inferer = infer::Infer::new();
         inferer.add(Self::GLB, "glb", glb_matcher);
         inferer.add(Self::STL, "stl", stl_matcher);
         inferer.add(Self::DAE, "dae", dae_matcher);
         inferer.add(Self::RVL, "rvl", rvl_matcher);
+        inferer.add(Self::FLAC, "flac", flac_matcher);
+        inferer.add(Self::WAV, "wav", wav_matcher);
+        inferer.add(Self::MP3, "mp3", mp3_matcher);
+        inferer.add(Self::OGG, "ogg", ogg_matcher);
 
         inferer
             .get(data)
@@ -276,6 +357,10 @@ impl MediaType {
             Self::STL => Some("stl"),
             Self::DAE => Some("dae"),
             Self::TEXT => Some("txt"),
+            Self::FLAC => Some("flac"),
+            Self::WAV => Some("wav"),
+            Self::MP3 => Some("mp3"),
+            Self::OGG => Some("ogg"),
 
             _ => {
                 let alternatives = mime_guess2::get_mime_extensions_str(&self.0)?;
@@ -291,9 +376,14 @@ impl MediaType {
         self.as_str().starts_with("image/")
     }
 
-    /// Returns `true` if this is an video media type.
+    /// Returns `true` if this is a video media type.
     pub fn is_video(&self) -> bool {
         self.as_str().starts_with("video/")
+    }
+
+    /// Returns `true` if this is an audio media type.
+    pub fn is_audio(&self) -> bool {
+        self.as_str().starts_with("audio/")
     }
 }
 
@@ -364,4 +454,53 @@ fn build_rvl_header(width: u32, height: u32, depth_quant_a: f32, depth_quant_b: 
     data[12..16].copy_from_slice(&width.to_le_bytes());
     data[16..20].copy_from_slice(&height.to_le_bytes());
     data
+}
+
+#[test]
+fn test_media_type_audio_extension() {
+    assert_eq!(MediaType::flac().file_extension(), Some("flac"));
+    assert_eq!(MediaType::wav().file_extension(), Some("wav"));
+    assert_eq!(MediaType::mp3().file_extension(), Some("mp3"));
+    assert_eq!(MediaType::ogg().file_extension(), Some("ogg"));
+}
+
+#[test]
+fn test_media_type_is_audio() {
+    assert!(MediaType::flac().is_audio());
+    assert!(MediaType::wav().is_audio());
+    assert!(MediaType::mp3().is_audio());
+    assert!(MediaType::ogg().is_audio());
+    assert!(!MediaType::mp4().is_audio());
+    assert!(!MediaType::png().is_audio());
+}
+
+#[test]
+fn test_guess_from_data_audio() {
+    // FLAC magic bytes
+    let flac_header = b"fLaC\x00\x00\x00\x22";
+    assert_eq!(
+        MediaType::guess_from_data(flac_header),
+        Some(MediaType::flac())
+    );
+
+    // WAV magic bytes (RIFF....WAVE)
+    let wav_header = b"RIFF\x00\x00\x00\x00WAVEfmt ";
+    assert_eq!(
+        MediaType::guess_from_data(wav_header),
+        Some(MediaType::wav())
+    );
+
+    // MP3 with ID3 tag
+    let mp3_id3_header = b"ID3\x04\x00\x00";
+    assert_eq!(
+        MediaType::guess_from_data(mp3_id3_header),
+        Some(MediaType::mp3())
+    );
+
+    // OGG magic bytes
+    let ogg_header = b"OggS\x00\x02\x00\x00";
+    assert_eq!(
+        MediaType::guess_from_data(ogg_header),
+        Some(MediaType::ogg())
+    );
 }

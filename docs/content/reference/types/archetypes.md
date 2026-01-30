@@ -10,6 +10,11 @@ built-in support. See [Entities and Components](../../concepts/logging-and-inges
 
 This page lists all built-in archetypes.
 
+## Audio
+
+* [`AssetAudio`](archetypes/asset_audio.md): An audio asset containing encoded or raw audio data.
+* [`AudioSampleReference`](archetypes/audio_sample_reference.md): Reference to a position within an `AssetAudio`.
+
 ## Geospatial
 
 * [`GeoLineStrings`](archetypes/geo_line_strings.md): Geospatial line strings with positions expressed in [EPSG:4326](https://epsg.io/4326) latitude and longitude (North/East-positive degrees), and optional colors and radii.

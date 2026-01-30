@@ -1,0 +1,17 @@
+namespace rerun.components;
+
+// ---
+
+/// Audio sample rate in Hz.
+///
+/// Common values: 44100 (CD), 48000 (professional), 96000 (high-res),
+/// 192000 (ultra high-res), 250000-500000 (ultrasonic/bat detection).
+table SampleRate (
+  "attr.arrow.transparent",
+  "attr.python.aliases": "int",
+  "attr.python.array_aliases": "int | npt.NDArray[np.uint32]",
+  "attr.rust.derive": "Copy, PartialEq, Eq, PartialOrd, Ord",
+  "attr.rust.repr": "transparent"
+) {
+  hz: rerun.datatypes.UInt32 (order: 100);
+}

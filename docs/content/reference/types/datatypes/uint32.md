@@ -17,3 +17,8 @@ uint32
  * 🦀 [Rust API docs for `UInt32`](https://docs.rs/rerun/latest/rerun/datatypes/struct.UInt32.html)
 
 
+## Used by
+
+* [`BitsPerSample`](../components/bits_per_sample.md)
+* [`ChannelLayout`](../components/channel_layout.md)
+* [`SampleRate`](../components/sample_rate.md)

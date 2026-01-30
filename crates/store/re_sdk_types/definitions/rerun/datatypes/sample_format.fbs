@@ -1,0 +1,43 @@
+namespace rerun.datatypes;
+
+/// Audio sample format.
+///
+/// Matches Symphonia's `SampleFormat` enum. Describes how decoded audio
+/// samples are represented in memory.
+enum SampleFormat: ubyte {
+    /// Invalid value. Won't show up in generated types.
+    Invalid = 0,
+
+    // Unsigned integers (1-4)
+    /// Unsigned 8-bit integer.
+    U8 = 1,
+
+    /// Unsigned 16-bit integer.
+    U16 = 2,
+
+    /// Unsigned 24-bit integer (stored in 32 bits).
+    U24 = 3,
+
+    /// Unsigned 32-bit integer.
+    U32 = 4,
+
+    // Signed integers (5-8) - most common for audio
+    /// Signed 8-bit integer.
+    S8 = 5,
+
+    /// Signed 16-bit integer (CD quality).
+    S16 = 6,
+
+    /// Signed 24-bit integer (professional audio).
+    S24 = 7,
+
+    /// Signed 32-bit integer.
+    S32 = 8,
+
+    // Floating point (9-10)
+    /// 32-bit IEEE-754 floating point.
+    F32 = 9,
+
+    /// 64-bit IEEE-754 floating point.
+    F64 = 10,
+}

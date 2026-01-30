@@ -17,8 +17,10 @@ on [Entities and Components](../../concepts/logging-and-ingestion/entity-compone
 * [`AlbedoFactor`](components/albedo_factor.md): A color multiplier, usually applied to a whole entity, e.g. a mesh.
 * [`AnnotationContext`](components/annotation_context.md): The annotation context provides additional information on how to display entities.
 * [`AxisLength`](components/axis_length.md): The length of an axis in local units of the space.
+* [`BitsPerSample`](components/bits_per_sample.md): Bit depth of audio samples.
 * [`Blob`](components/blob.md): A binary blob of data.
 * [`ChannelId`](components/channel_id.md): A 16-bit ID representing an MCAP channel.
+* [`ChannelLayout`](components/channel_layout.md): Audio channel layout as a bitmask.
 * [`ChannelMessageCounts`](components/channel_message_counts.md): A mapping of channel IDs to their respective message counts.
 * [`ClassId`](components/class_id.md): A 16-bit ID representing a type of semantic class.
 * [`ClearIsRecursive`](components/clear_is_recursive.md): Configures how a clear operation should behave - recursive or not.
@@ -63,6 +65,10 @@ on [Entities and Components](../../concepts/logging-and-ingestion/entity-compone
 * [`Resolution`](components/resolution.md): Pixel resolution width & height, e.g. of a camera sensor.
 * [`RotationAxisAngle`](components/rotation_axis_angle.md): 3D rotation represented by a rotation around a given axis.
 * [`RotationQuat`](components/rotation_quat.md): A 3D rotation expressed as a quaternion.
+* [`SampleCount`](components/sample_count.md): Number of audio samples (duration in samples).
+* [`SampleFormat`](components/sample_format.md): Audio sample format.
+* [`SampleOffset`](components/sample_offset.md): Sample offset into an audio stream.
+* [`SampleRate`](components/sample_rate.md): Audio sample rate in Hz.
 * [`Scalar`](components/scalar.md): A scalar value, encoded as a 64-bit floating point.
 * [`Scale3D`](components/scale3d.md): A 3D scale factor.
 * [`SchemaId`](components/schema_id.md): A 16-bit unique identifier for a schema within the MCAP file.

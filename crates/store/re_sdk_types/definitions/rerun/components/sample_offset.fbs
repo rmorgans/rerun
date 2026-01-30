@@ -1,0 +1,17 @@
+namespace rerun.components;
+
+// ---
+
+/// Sample offset into an audio stream.
+///
+/// Used by `AudioSampleReference` to point into an `AssetAudio`,
+/// and by `AudioDetection` to define detection boundaries.
+table SampleOffset (
+  "attr.arrow.transparent",
+  "attr.python.aliases": "int",
+  "attr.python.array_aliases": "int | npt.NDArray[np.uint64]",
+  "attr.rust.derive": "Copy, PartialEq, Eq, PartialOrd, Ord",
+  "attr.rust.repr": "transparent"
+) {
+  offset: rerun.datatypes.UInt64 (order: 100);
+}

@@ -21,3 +21,5 @@ uint64
 
 * [`ChannelCountPair`](../datatypes/channel_count_pair.md)
 * [`Count`](../components/count.md)
+* [`SampleCount`](../components/sample_count.md)
+* [`SampleOffset`](../components/sample_offset.md)

@@ -1,0 +1,18 @@
+namespace rerun.components;
+
+// ---
+
+/// Audio sample format.
+///
+/// Wraps Symphonia's `SampleFormat`. Describes how decoded audio samples
+/// are represented in memory.
+///
+/// Only needed for raw PCM data where the format cannot be inferred
+/// from the container.
+table SampleFormat (
+  "attr.arrow.transparent",
+  "attr.rust.derive": "Copy, PartialEq, Eq, Hash",
+  "attr.rust.repr": "transparent"
+) {
+  format: rerun.datatypes.SampleFormat (order: 100);
+}

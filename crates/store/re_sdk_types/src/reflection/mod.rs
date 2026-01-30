@@ -590,6 +590,16 @@ fn generate_component_reflection() -> Result<ComponentReflectionMap, Serializati
             },
         ),
         (
+            <BitsPerSample as Component>::name(),
+            ComponentReflection {
+                docstring_md: "Bit depth of audio samples.\n\nMatches Symphonia's `CodecParameters.bits_per_sample`.\n\nCommon values: 8, 16 (CD quality), 24 (professional), 32.",
+                deprecation_summary: None,
+                custom_placeholder: None,
+                datatype: BitsPerSample::arrow_datatype(),
+                verify_arrow_array: BitsPerSample::verify_arrow_array,
+            },
+        ),
+        (
             <Blob as Component>::name(),
             ComponentReflection {
                 docstring_md: "A binary blob of data.",
@@ -607,6 +617,16 @@ fn generate_component_reflection() -> Result<ComponentReflectionMap, Serializati
                 custom_placeholder: None,
                 datatype: ChannelId::arrow_datatype(),
                 verify_arrow_array: ChannelId::verify_arrow_array,
+            },
+        ),
+        (
+            <ChannelLayout as Component>::name(),
+            ComponentReflection {
+                docstring_md: "Audio channel layout as a bitmask.\n\nMatches Symphonia's `Channels` type. Bits follow the WAVEFORMATEXTENSIBLE\nstandard (channels 0-17) plus Symphonia extensions (18+).\n\nCommon layouts:\n* `0x1` = Mono (Front Center)\n* `0x3` = Stereo (Front Left + Front Right)\n* `0x3F` = 5.1 Surround\n* `0xFF` = 7.1 Surround\n\nUse `count_ones()` to get the number of channels from the bitmask.",
+                deprecation_summary: None,
+                custom_placeholder: None,
+                datatype: ChannelLayout::arrow_datatype(),
+                verify_arrow_array: ChannelLayout::verify_arrow_array,
             },
         ),
         (
@@ -1047,6 +1067,46 @@ fn generate_component_reflection() -> Result<ComponentReflectionMap, Serializati
                 custom_placeholder: Some(RotationQuat::default().to_arrow()?),
                 datatype: RotationQuat::arrow_datatype(),
                 verify_arrow_array: RotationQuat::verify_arrow_array,
+            },
+        ),
+        (
+            <SampleCount as Component>::name(),
+            ComponentReflection {
+                docstring_md: "Number of audio samples (duration in samples).\n\nTo convert to seconds: `duration_sec = sample_count / sample_rate`",
+                deprecation_summary: None,
+                custom_placeholder: None,
+                datatype: SampleCount::arrow_datatype(),
+                verify_arrow_array: SampleCount::verify_arrow_array,
+            },
+        ),
+        (
+            <SampleFormat as Component>::name(),
+            ComponentReflection {
+                docstring_md: "Audio sample format.\n\nWraps Symphonia's `SampleFormat`. Describes how decoded audio samples\nare represented in memory.\n\nOnly needed for raw PCM data where the format cannot be inferred\nfrom the container.",
+                deprecation_summary: None,
+                custom_placeholder: None,
+                datatype: SampleFormat::arrow_datatype(),
+                verify_arrow_array: SampleFormat::verify_arrow_array,
+            },
+        ),
+        (
+            <SampleOffset as Component>::name(),
+            ComponentReflection {
+                docstring_md: "Sample offset into an audio stream.\n\nUsed by `AudioSampleReference` to point into an `AssetAudio`,\nand by `AudioDetection` to define detection boundaries.",
+                deprecation_summary: None,
+                custom_placeholder: None,
+                datatype: SampleOffset::arrow_datatype(),
+                verify_arrow_array: SampleOffset::verify_arrow_array,
+            },
+        ),
+        (
+            <SampleRate as Component>::name(),
+            ComponentReflection {
+                docstring_md: "Audio sample rate in Hz.\n\nCommon values: 44100 (CD), 48000 (professional), 96000 (high-res),\n192000 (ultra high-res), 250000-500000 (ultrasonic/bat detection).",
+                deprecation_summary: None,
+                custom_placeholder: None,
+                datatype: SampleRate::arrow_datatype(),
+                verify_arrow_array: SampleRate::verify_arrow_array,
             },
         ),
         (
@@ -1506,6 +1566,59 @@ fn generate_archetype_reflection() -> ArchetypeReflectionMap {
             },
         ),
         (
+            ArchetypeName::new("rerun.archetypes.AssetAudio"),
+            ArchetypeReflection {
+                display_name: "Asset audio",
+                deprecation_summary: None,
+                scope: None,
+                view_types: &["AudioView"],
+                fields: vec![
+                    ArchetypeFieldReflection {
+                        name: "blob",
+                        display_name: "Blob",
+                        component_type: "rerun.components.Blob".into(),
+                        docstring_md: "The audio data bytes.\n\nFor encoded formats (FLAC, MP3, etc.), this is the raw file/stream bytes.\nFor raw PCM, this is the sample bytes (use `sample_format` to specify encoding).",
+                        is_required: true,
+                    },
+                    ArchetypeFieldReflection {
+                        name: "media_type",
+                        display_name: "Media type",
+                        component_type: "rerun.components.MediaType".into(),
+                        docstring_md: "The Media Type of the audio container.\n\nSupported values:\n* `audio/flac`\n* `audio/wav`\n* `audio/mpeg` (MP3)\n* `audio/ogg` (Opus or Vorbis)\n\nIf omitted, the viewer will try to guess from the data blob.",
+                        is_required: false,
+                    },
+                    ArchetypeFieldReflection {
+                        name: "sample_rate",
+                        display_name: "Sample rate",
+                        component_type: "rerun.components.SampleRate".into(),
+                        docstring_md: "Sample rate in Hz (e.g., 48000).\n\nMatches Symphonia's `SignalSpec.rate`. For encoded formats this can be\nread from headers, but providing it enables faster initialization.",
+                        is_required: false,
+                    },
+                    ArchetypeFieldReflection {
+                        name: "channel_layout",
+                        display_name: "Channel layout",
+                        component_type: "rerun.components.ChannelLayout".into(),
+                        docstring_md: "Channel layout as a bitmask.\n\nMatches Symphonia's `Channels`. Common values:\n* `0x3` = Stereo\n* `0x3F` = 5.1 Surround",
+                        is_required: false,
+                    },
+                    ArchetypeFieldReflection {
+                        name: "bits_per_sample",
+                        display_name: "Bits per sample",
+                        component_type: "rerun.components.BitsPerSample".into(),
+                        docstring_md: "Bit depth of audio samples (8, 16, 24, or 32).\n\nMatches Symphonia's `CodecParameters.bits_per_sample`.",
+                        is_required: false,
+                    },
+                    ArchetypeFieldReflection {
+                        name: "sample_format",
+                        display_name: "Sample format",
+                        component_type: "rerun.components.SampleFormat".into(),
+                        docstring_md: "Sample format for raw PCM data.\n\nOnly needed when logging raw PCM bytes without a container.\nFor encoded formats (FLAC, MP3, etc.), this is ignored.",
+                        is_required: false,
+                    },
+                ],
+            },
+        ),
+        (
             ArchetypeName::new("rerun.archetypes.AssetVideo"),
             ArchetypeReflection {
                 display_name: "Asset video",
@@ -1525,6 +1638,31 @@ fn generate_archetype_reflection() -> ArchetypeReflectionMap {
                         display_name: "Media type",
                         component_type: "rerun.components.MediaType".into(),
                         docstring_md: "The Media Type of the asset.\n\nSupported values:\n* `video/mp4`\n\nIf omitted, the viewer will try to guess from the data blob.\nIf it cannot guess, it won't be able to render the asset.",
+                        is_required: false,
+                    },
+                ],
+            },
+        ),
+        (
+            ArchetypeName::new("rerun.archetypes.AudioSampleReference"),
+            ArchetypeReflection {
+                display_name: "Audio sample reference",
+                deprecation_summary: None,
+                scope: None,
+                view_types: &["AudioView"],
+                fields: vec![
+                    ArchetypeFieldReflection {
+                        name: "sample_offset",
+                        display_name: "Sample offset",
+                        component_type: "rerun.components.SampleOffset".into(),
+                        docstring_md: "Sample offset into the audio stream.\n\nThe viewer will seek to this position when the timeline reaches\nthis timestamp. For continuous playback, log references at regular\nintervals (e.g., every second).",
+                        is_required: true,
+                    },
+                    ArchetypeFieldReflection {
+                        name: "duration_samples",
+                        display_name: "Duration samples",
+                        component_type: "rerun.components.SampleCount".into(),
+                        docstring_md: "Optional: Number of samples to play from this offset.\n\nIf not specified, plays until the next reference or end of asset.",
                         is_required: false,
                     },
                 ],

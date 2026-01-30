@@ -1,0 +1,16 @@
+namespace rerun.components;
+
+// ---
+
+/// Number of audio samples (duration in samples).
+///
+/// To convert to seconds: `duration_sec = sample_count / sample_rate`
+table SampleCount (
+  "attr.arrow.transparent",
+  "attr.python.aliases": "int",
+  "attr.python.array_aliases": "int | npt.NDArray[np.uint64]",
+  "attr.rust.derive": "Copy, PartialEq, Eq, PartialOrd, Ord",
+  "attr.rust.repr": "transparent"
+) {
+  count: rerun.datatypes.UInt64 (order: 100);
+}

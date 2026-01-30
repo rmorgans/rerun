@@ -1,0 +1,73 @@
+namespace rerun.archetypes;
+
+/// An audio asset containing encoded or raw audio data.
+///
+/// Store this once (typically as static/timeless data), then use
+/// `AudioSampleReference` to reference specific positions on your timeline.
+///
+/// Similar to how `AssetVideo` + `VideoFrameReference` work for video.
+///
+/// ## Supported Formats
+///
+/// - **FLAC**: Lossless, recommended for archival and analysis
+/// - **WAV**: Uncompressed PCM in a container
+/// - **MP3**: Lossy, widely compatible
+/// - **OGG**: Container for Opus or Vorbis codecs
+///
+/// Codec detection is automatic via Symphonia. The optional metadata fields
+/// (`sample_rate`, `channel_layout`, etc.) are hints that can speed up
+/// initialization but are not required.
+///
+/// \example archetypes/asset_audio title="Log an audio file"
+table AssetAudio (
+  "attr.docs.category": "Audio",
+  "attr.docs.view_types": "AudioView",
+  "attr.rerun.state": "unstable"
+) {
+  // --- Required ---
+
+  /// The audio data bytes.
+  ///
+  /// For encoded formats (FLAC, MP3, etc.), this is the raw file/stream bytes.
+  /// For raw PCM, this is the sample bytes (use `sample_format` to specify encoding).
+  blob: rerun.components.Blob ("attr.rerun.component_required", order: 1000);
+
+  // --- Recommended ---
+
+  /// The Media Type of the audio container.
+  ///
+  /// Supported values:
+  /// * `audio/flac`
+  /// * `audio/wav`
+  /// * `audio/mpeg` (MP3)
+  /// * `audio/ogg` (Opus or Vorbis)
+  ///
+  /// If omitted, the viewer will try to guess from the data blob.
+  media_type: rerun.components.MediaType ("attr.rerun.component_recommended", nullable, order: 2000);
+
+  // --- Optional metadata hints ---
+
+  /// Sample rate in Hz (e.g., 48000).
+  ///
+  /// Matches Symphonia's `SignalSpec.rate`. For encoded formats this can be
+  /// read from headers, but providing it enables faster initialization.
+  sample_rate: rerun.components.SampleRate ("attr.rerun.component_optional", nullable, order: 3000);
+
+  /// Channel layout as a bitmask.
+  ///
+  /// Matches Symphonia's `Channels`. Common values:
+  /// * `0x3` = Stereo
+  /// * `0x3F` = 5.1 Surround
+  channel_layout: rerun.components.ChannelLayout ("attr.rerun.component_optional", nullable, order: 3100);
+
+  /// Bit depth of audio samples (8, 16, 24, or 32).
+  ///
+  /// Matches Symphonia's `CodecParameters.bits_per_sample`.
+  bits_per_sample: rerun.components.BitsPerSample ("attr.rerun.component_optional", nullable, order: 3200);
+
+  /// Sample format for raw PCM data.
+  ///
+  /// Only needed when logging raw PCM bytes without a container.
+  /// For encoded formats (FLAC, MP3, etc.), this is ignored.
+  sample_format: rerun.components.SampleFormat ("attr.rerun.component_optional", nullable, order: 3300);
+}

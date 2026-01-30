@@ -16,8 +16,10 @@ from .annotation_context import (
     AnnotationContextLike,
 )
 from .axis_length import AxisLength, AxisLengthBatch
+from .bits_per_sample import BitsPerSample, BitsPerSampleBatch
 from .blob import Blob, BlobBatch
 from .channel_id import ChannelId, ChannelIdBatch
+from .channel_layout import ChannelLayout, ChannelLayoutBatch
 from .channel_message_counts import (
     ChannelMessageCounts,
     ChannelMessageCountsArrayLike,
@@ -72,6 +74,10 @@ from .range1d import Range1D, Range1DBatch
 from .resolution import Resolution, ResolutionBatch
 from .rotation_axis_angle import RotationAxisAngle, RotationAxisAngleBatch
 from .rotation_quat import RotationQuat, RotationQuatBatch
+from .sample_count import SampleCount, SampleCountBatch
+from .sample_format import SampleFormat, SampleFormatBatch
+from .sample_offset import SampleOffset, SampleOffsetBatch
+from .sample_rate import SampleRate, SampleRateBatch
 from .scalar import Scalar, ScalarBatch
 from .scale3d import Scale3D, Scale3DBatch
 from .schema_id import SchemaId, SchemaIdBatch
@@ -118,10 +124,14 @@ __all__ = [
     "AnnotationContextLike",
     "AxisLength",
     "AxisLengthBatch",
+    "BitsPerSample",
+    "BitsPerSampleBatch",
     "Blob",
     "BlobBatch",
     "ChannelId",
     "ChannelIdBatch",
+    "ChannelLayout",
+    "ChannelLayoutBatch",
     "ChannelMessageCounts",
     "ChannelMessageCountsArrayLike",
     "ChannelMessageCountsBatch",
@@ -230,6 +240,14 @@ __all__ = [
     "RotationAxisAngleBatch",
     "RotationQuat",
     "RotationQuatBatch",
+    "SampleCount",
+    "SampleCountBatch",
+    "SampleFormat",
+    "SampleFormatBatch",
+    "SampleOffset",
+    "SampleOffsetBatch",
+    "SampleRate",
+    "SampleRateBatch",
     "Scalar",
     "ScalarBatch",
     "Scale3D",
