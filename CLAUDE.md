@@ -65,6 +65,12 @@ To add custom functionality to generated types, create `_ext` files:
 - Python: `filename_ext.py` (mixed in with generated class)
 - C++: `filename_ext.cpp` (compiled and included automatically, parts of it may be marked for copy into the header by codegen)
 
+### FlatBuffers gotchas
+
+- Enums must start with `Invalid = 0` (exactly this name, not `Unknown` or `None`)
+- The `Invalid` variant is **not generated** in Rust - don't reference it in `_ext.rs` files
+- Components wrapping `UInt32`/`UInt64` don't support `Hash` in derives (use `Copy, PartialEq, Eq, PartialOrd, Ord`)
+
 ## Code conventions
 
 ### General
